@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Lab1.DTOs.StoppageDTOs;
 using Lab1.Entities;
+using Lab1.Entities.Parameters;
 using Lab1.Interfaces.SqlServices;
 using Lab1.Validators;
 using Microsoft.AspNetCore.Mvc;
@@ -22,9 +23,9 @@ namespace Lab1.Controllers
         // GET: Get all entities
         [Route("")]
         [HttpGet]
-        public async Task<IEnumerable<Stoppage>> GetAll()
+        public async Task<IEnumerable<Stoppage>> GetAll([FromQuery] StoppageParameters stoppageParameters)
         {
-            return await _service.GetAll();
+            return await _service.GetAll(stoppageParameters);
         }
 
         // GET: Get single entity

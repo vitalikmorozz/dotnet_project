@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Lab1.Entities;
+using Lab1.Entities.Parameters;
 using Lab1.Interfaces.SqlRepositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,9 +14,13 @@ namespace Lab1.Repositories.SQLRepositories
         {
         }
 
-        public new async Task<IEnumerable<User>> GetAll()
+        public async Task<IEnumerable<User>> GetAll(UserParameters parameters)
         {
-            return await _entities.Include(u => u.Tickets).ToListAsync();
+            return await _entities
+                .Include(u => u.Tickets)
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .ToListAsync();
 
         }
 

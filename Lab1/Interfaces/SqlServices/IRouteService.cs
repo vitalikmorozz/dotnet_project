@@ -2,12 +2,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Lab1.DTOs.RouteDTOs;
 using Lab1.Entities;
+using Lab1.Entities.Parameters;
 
 namespace Lab1.Interfaces.SqlServices
 {
     public interface IRouteService
     {
-        Task<IEnumerable<Route>> GetAll();
+        Task<IEnumerable<Route>> GetAll(RouteParameters routeParameters);
 
         Task<Route> GetOneById(int id);
 

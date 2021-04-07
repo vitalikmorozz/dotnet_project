@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Lab1.DTOs.StoppageDTOs;
 using Lab1.Entities;
+using Lab1.Entities.Parameters;
 using Lab1.Interfaces;
 using Lab1.Interfaces.SqlServices;
 
@@ -21,9 +22,9 @@ namespace Lab1.Services
             _mapper = mapper;
         }
         
-        public async Task<IEnumerable<Stoppage>> GetAll()
+        public async Task<IEnumerable<Stoppage>> GetAll(StoppageParameters stoppageParameters)
         {
-            return await _unitOfWork._stoppageRepository.GetAll();
+            return await _unitOfWork._stoppageRepository.GetAll(stoppageParameters);
         }
 
         public async Task<Stoppage> GetOneById(int id)

@@ -1,12 +1,15 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Lab1.Entities.Parameters;
 using Lab1.Interfaces;
 using Lab1.Interfaces.SqlRepositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lab1.Repositories
 {
-    public class GenericRepository<TEntity, TId> : IGenericRepository<TEntity, TId> where TEntity : class, IBaseEntity<TId>
+    public abstract class GenericRepository<TEntity, TId> : IGenericRepository<TEntity, TId>
+        where TEntity : class, IBaseEntity<TId>
     {
         protected DbContext _dbContext;
         protected DbSet<TEntity> _entities;
@@ -17,9 +20,10 @@ namespace Lab1.Repositories
             _entities = dbContext.Set<TEntity>();
         }
 
-        public async Task<IEnumerable<TEntity>> GetAll()
+        public async Task<IEnumerable<TEntity>> GetAll(QueryStringParameters parameters)
         {
-            return await _entities.ToListAsync();
+            return await _entities.Skip((parameters.PageNumber - 1) * parameters.PageSize).Take(parameters.PageSize)
+                .ToListAsync();
         }
 
         public async Task<TEntity> GetOneById(TId id)

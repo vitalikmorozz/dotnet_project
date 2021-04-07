@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Lab1.DTOs.TicketDTOs;
 using Lab1.Entities;
+using Lab1.Entities.Parameters;
 using Lab1.Interfaces.SqlServices;
 using Lab1.Validators;
 using Microsoft.AspNetCore.Mvc;
@@ -22,9 +23,9 @@ namespace Lab1.Controllers
         // GET: Get all entities
         [Route("")]
         [HttpGet]
-        public async Task<IEnumerable<Ticket>> GetAll()
+        public async Task<IEnumerable<Ticket>> GetAll([FromQuery] TicketParameters ticketParameters)
         {
-            return await _service.GetAll();
+            return await _service.GetAll(ticketParameters);
         }
 
         // GET: Get single entity
