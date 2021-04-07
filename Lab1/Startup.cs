@@ -1,4 +1,6 @@
 using System;
+using FluentValidation.AspNetCore;
+using Lab1.Filters;
 using Lab1.Infrastructure;
 using Lab1.Interfaces;
 using Lab1.Interfaces.SqlRepositories;
@@ -30,42 +32,52 @@ namespace Lab1
         {
             services.AddDbContext<EfConfig.MyDbContext>(
                 options => options.UseMySql(
-                        Configuration.GetConnectionString("DefaultConnection"), 
+                        Configuration.GetConnectionString("DefaultConnection"),
                         new MySqlServerVersion(new Version(8, 0, 0)))
-                .EnableSensitiveDataLogging()
-                .EnableSensitiveDataLogging()
+                    .EnableSensitiveDataLogging()
+                    .EnableSensitiveDataLogging()
             );
-            services.AddControllers().AddNewtonsoftJson(options => 
+            services.AddControllers(options =>
+                options.Filters.Add(new ValidationFilter())
+            ).AddFluentValidation(options =>
+                options.RegisterValidatorsFromAssemblyContaining<Startup>()
+            ).AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Lab1", Version = "v1"}); });
 
             #region AutoMapper
+
             services.AddAutoMapper(
-                typeof(UserProfile), 
+                typeof(UserProfile),
                 typeof(StationProfile),
                 typeof(TrainProfile),
                 typeof(TicketProfile),
                 typeof(StoppageProfile),
                 typeof(RouteProfile));
+
             #endregion
- 
-            
+
+
             #region SQL repositories
+
             services.AddTransient<IStationRepository, StationRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IRouteRepository, RouteRepository>();
             services.AddTransient<IStoppageRepository, StoppageRepository>();
             services.AddTransient<ITicketRepository, TicketRepository>();
             services.AddTransient<ITrainRepository, TrainRepository>();
+
             #endregion
 
             #region SQL services
+
             services.AddTransient<IStationService, StationService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IRouteService, RouteService>();
             services.AddTransient<IStoppageService, StoppageService>();
             services.AddTransient<ITicketService, TicketService>();
             services.AddTransient<ITrainService, TrainService>();
+
             #endregion
 
             services.AddTransient<IConnectionFactory, ConnectionFactory>();

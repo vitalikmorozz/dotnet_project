@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Lab1.DTOs.TicketDTOs;
 using Lab1.Entities;
 using Lab1.Interfaces.SqlServices;
+using Lab1.Validators;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lab1.Controllers
@@ -37,9 +38,12 @@ namespace Lab1.Controllers
         // POST: Create entity
         [Route("")]
         [HttpPost]
-        public async Task<Ticket> Create([FromBody] TicketRequestDto dto)
+        public async Task<ActionResult> Create([FromBody] TicketRequestDto dto)
         {
-            return await _service.Create(dto);
+            var validator = new TicketValidator();
+            var result = await validator.ValidateAsync(dto);
+            if (!result.IsValid) return BadRequest(result.Errors);
+            return Ok(await _service.Create(dto));
         }
 
         // DELETE: Delete single entity by id
@@ -53,9 +57,12 @@ namespace Lab1.Controllers
         // PUT: Update single entity
         [Route("{id}")]
         [HttpPut]
-        public async Task<Ticket> Update(int id, [FromBody] TicketRequestDto dto)
+        public async Task<ActionResult> Update(int id, [FromBody] TicketRequestDto dto)
         {
-            return await _service.Update(id, dto);
+            var validator = new TicketValidator();
+            var result = await validator.ValidateAsync(dto);
+            if (!result.IsValid) return BadRequest(result.Errors);
+            return Ok(await _service.Update(id, dto));
         }
     }
 }
