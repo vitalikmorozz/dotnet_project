@@ -23,9 +23,11 @@ namespace Lab1.Controllers
         // GET: Get all entities
         [Route("")]
         [HttpGet]
-        public async Task<IEnumerable<Stoppage>> GetAll([FromQuery] StoppageParameters stoppageParameters)
+        public async Task<ActionResult> GetAll([FromQuery] StoppageParameters stoppageParameters)
         {
-            return await _service.GetAll(stoppageParameters);
+            if (stoppageParameters.MinArrivalTime > stoppageParameters.MaxArrivalTime) return BadRequest("Max arrival time should be less than min arrival time");
+            if (stoppageParameters.MinDepartureTime > stoppageParameters.MaxDepartureTime) return BadRequest("Max departure time should be less than min departure time");
+            return Ok(await _service.GetAll(stoppageParameters));
         }
 
         // GET: Get single entity

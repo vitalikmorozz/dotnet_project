@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,14 +14,26 @@ namespace Lab1.Repositories.SQLRepositories
         public StoppageRepository(EfConfig.MyDbContext dbContext) : base(dbContext)
         {
         }
-
+        
         public async Task<IEnumerable<Stoppage>> GetAll(StoppageParameters parameters)
         {
-            return await _entities
+            var listAsync = await _entities
                 .Include(s => s.Station)
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
                 .ToListAsync();
+
+            if (parameters.MinArrivalTime != DateTime.MinValue && parameters.MaxArrivalTime != DateTime.MinValue)
+                listAsync = listAsync.FindAll(stoppage =>
+                    stoppage.ArrivalTime < parameters.MaxArrivalTime &&
+                    stoppage.ArrivalTime > parameters.MinArrivalTime);
+            
+            if (parameters.MinDepartureTime != DateTime.MinValue && parameters.MaxDepartureTime != DateTime.MinValue)
+                listAsync = listAsync.FindAll(stoppage =>
+                    stoppage.DepartureTime < parameters.MaxDepartureTime &&
+                    stoppage.DepartureTime > parameters.MinDepartureTime);
+            
+            return listAsync;
         }
 
         public new async Task<Stoppage> GetOneById(int id)
