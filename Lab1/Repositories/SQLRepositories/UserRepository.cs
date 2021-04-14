@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,12 +17,23 @@ namespace Lab1.Repositories.SQLRepositories
 
         public async Task<IEnumerable<User>> GetAll(UserParameters parameters)
         {
-            return await _entities
+            var list = await _entities
                 .Include(u => u.Tickets)
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
                 .ToListAsync();
 
+            if (!parameters.FirstNameSearch.Equals(String.Empty))
+            {
+                list = list.FindAll((user => user.FirstName.Contains(parameters.FirstNameSearch)));
+            }
+            
+            if (!parameters.LastNameSearch.Equals(String.Empty))
+            {
+                list = list.FindAll((user => user.LastName.Contains(parameters.LastNameSearch)));
+            }
+            
+            return list;
         }
 
         public new async Task<User> GetOneById(int id)
