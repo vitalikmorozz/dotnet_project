@@ -1,6 +1,8 @@
 using System;
 using FluentValidation.AspNetCore;
+using Lab1.Entities;
 using Lab1.Filters;
+using Lab1.Helpers;
 using Lab1.Infrastructure;
 using Lab1.Interfaces;
 using Lab1.Interfaces.SqlRepositories;
@@ -81,6 +83,7 @@ namespace Lab1
             #endregion
 
             services.AddTransient<IConnectionFactory, ConnectionFactory>();
+            services.AddTransient<ISortHelper<Station>, SortHelper<Station>>();
 
             services.AddTransient<IUnitOfWork, UnitOfWork.UnitOfWork>();
 
