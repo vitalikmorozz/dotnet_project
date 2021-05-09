@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Lab1.DTOs.UserDTOs;
 using Lab1.Entities;
+using Lab1.Entities.Parameters;
 using Lab1.Interfaces.SqlServices;
+using Lab1.Validators;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lab1.Controllers
@@ -22,9 +24,9 @@ namespace Lab1.Controllers
         // GET: Get all entities
         [Route("")]
         [HttpGet]
-        public async Task<IEnumerable<User>> GetAll()
+        public async Task<IEnumerable<User>> GetAll([FromQuery] UserParameters userParameters)
         {
-            return await _service.GetAll();
+            return await _service.GetAll(userParameters);
         }
 
         // GET: Get single entity
@@ -38,9 +40,12 @@ namespace Lab1.Controllers
         // POST: Create entity
         [Route("")]
         [HttpPost]
-        public async Task<User> Create([FromBody] UserRequestDto dto)
+        public async Task<ActionResult> Create([FromBody] UserRequestDto dto)
         {
-            return await _service.Create(dto);
+            var validator = new UserValidator();
+            var result = await validator.ValidateAsync(dto);
+            if (!result.IsValid) return BadRequest(result.Errors);
+            return Ok(await _service.Create(dto));
         }
 
         // DELETE: Delete single entity by id
@@ -54,9 +59,12 @@ namespace Lab1.Controllers
         // PUT: Update single entity
         [Route("{id}")]
         [HttpPut]
-        public async Task<User> Update(int id, [FromBody] UserRequestDto dto)
+        public async Task<ActionResult> Update(int id, [FromBody] UserRequestDto dto)
         {
-            return await _service.Update(id, dto);
+            var validator = new UserValidator();
+            var result = await validator.ValidateAsync(dto);
+            if (!result.IsValid) return BadRequest(result.Errors);
+            return Ok(await _service.Update(id, dto));
         }
     }
 }

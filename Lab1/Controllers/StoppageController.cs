@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Lab1.DTOs.StoppageDTOs;
 using Lab1.Entities;
+using Lab1.Entities.Parameters;
 using Lab1.Interfaces.SqlServices;
+using Lab1.Validators;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lab1.Controllers
@@ -21,9 +23,11 @@ namespace Lab1.Controllers
         // GET: Get all entities
         [Route("")]
         [HttpGet]
-        public async Task<IEnumerable<Stoppage>> GetAll()
+        public async Task<ActionResult> GetAll([FromQuery] StoppageParameters stoppageParameters)
         {
-            return await _service.GetAll();
+            if (stoppageParameters.MinArrivalTime > stoppageParameters.MaxArrivalTime) return BadRequest("Max arrival time should be less than min arrival time");
+            if (stoppageParameters.MinDepartureTime > stoppageParameters.MaxDepartureTime) return BadRequest("Max departure time should be less than min departure time");
+            return Ok(await _service.GetAll(stoppageParameters));
         }
 
         // GET: Get single entity
@@ -37,9 +41,12 @@ namespace Lab1.Controllers
         // POST: Create entity
         [Route("")]
         [HttpPost]
-        public async Task<Stoppage> Create([FromBody] StoppageRequestDto dto)
+        public async Task<ActionResult> Create([FromBody] StoppageRequestDto dto)
         {
-            return await _service.Create(dto);
+            var validator = new StoppageValidator();
+            var result = await validator.ValidateAsync(dto);
+            if (!result.IsValid) return BadRequest(result.Errors);
+            return Ok(await _service.Create(dto));
         }
 
         // DELETE: Delete single entity by id
@@ -53,9 +60,12 @@ namespace Lab1.Controllers
         // PUT: Update single entity
         [Route("{id}")]
         [HttpPut]
-        public async Task<Stoppage> Update(int id, [FromBody] StoppageRequestDto dto)
+        public async Task<ActionResult> Update(int id, [FromBody] StoppageRequestDto dto)
         {
-            return await _service.Update(id, dto);
+            var validator = new StoppageValidator();
+            var result = await validator.ValidateAsync(dto);
+            if (!result.IsValid) return BadRequest(result.Errors);
+            return Ok(await _service.Update(id, dto));
         }
     }
 }

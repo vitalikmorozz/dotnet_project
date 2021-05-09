@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Lab1.DTOs.RouteDTOs;
 using Lab1.Entities;
+using Lab1.Entities.Parameters;
 using Lab1.Interfaces;
 using Lab1.Interfaces.SqlServices;
 
@@ -21,9 +22,9 @@ namespace Lab1.Services
             _mapper = mapper;
         }
         
-        public async Task<IEnumerable<Route>> GetAll()
+        public async Task<IEnumerable<Route>> GetAll(RouteParameters routeParameters)
         {
-            return await _unitOfWork._routeRepository.GetAll();
+            return await _unitOfWork._routeRepository.GetAll(routeParameters);
         }
 
         public async Task<Route> GetOneById(int id)
